@@ -1,9 +1,9 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.user.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import ru.practicum.shareit.request.model.ItemRequest;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Item {
+public class User {
     @Setter
     Long id;
     @NonNull
@@ -22,11 +22,6 @@ public class Item {
     String name;
     @NonNull
     @NotBlank
-    String description;
-    @NonNull
-    Boolean available;
-    @NonNull
-    Long owner;
-    @Setter
-    ItemRequest request;
+    @Email
+    String email;
 }

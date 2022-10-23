@@ -1,34 +1,30 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.request.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 /**
- * TODO Sprint add-bookings.
+ * TODO Sprint add-item-requests.
  */
 @Getter
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BookingDto {
+public class ItemRequest {
     @NonNull
     Long id;
     @NonNull
-    @JsonFormat(pattern="YYYY-MM-DDTHH:mm:ss")
-    LocalDateTime start;
+    @NotBlank
+    String description;
+    @NonNull
+    User requestor;
     @NonNull
     @JsonFormat(pattern="YYYY-MM-DDTHH:mm:ss")
-    LocalDateTime end;
-    @NonNull
-    Item item;
-    @NonNull
-    User booker;
-    @NonNull
-    String status;
+    LocalDateTime created;
 }
