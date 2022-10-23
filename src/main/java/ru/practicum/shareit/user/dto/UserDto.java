@@ -13,8 +13,8 @@ import javax.validation.constraints.Email;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 
-    public UserDto(String name, String email){
-        this.name=name;
+    public UserDto(String name, String email) {
+        this.name = name;
         this.email = email;
     }
 

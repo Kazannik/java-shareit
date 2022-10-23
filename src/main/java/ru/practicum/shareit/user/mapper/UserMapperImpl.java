@@ -8,15 +8,15 @@ import ru.practicum.shareit.user.model.User;
 public class UserMapperImpl implements UserMapper {
     @Override
     public User toUser(UserDto dto) {
-        User user = new User( dto.getName(), dto.getEmail());
+        User user = new User(dto.getName(), dto.getEmail());
         user.setId(dto.getId());
         return user;
     }
 
     @Override
     public User patchUser(User user, UserDto dto) {
-        User patchedUser = new User(dto.getName() !=null ? dto.getName(): user.getName(),
-                dto.getEmail() !=null ? dto.getEmail() : user.getEmail());
+        User patchedUser = new User(dto.getName() != null ? dto.getName() : user.getName(),
+                dto.getEmail() != null ? dto.getEmail() : user.getEmail());
         patchedUser.setId(user.getId());
         return patchedUser;
     }

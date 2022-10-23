@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
         return itemStorage.search(text);
     }
 
-    private void itemValidated(Item item){
+    private void itemValidated(Item item) {
         if (!service.existsUserById(item.getOwner())) {
             log.debug("User {} not found", item.getOwner());
             throw new NotFoundException(String.format("User %s not found.", item.getOwner()));

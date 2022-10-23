@@ -20,10 +20,10 @@ public class BookingDto {
     @NonNull
     Long id;
     @NonNull
-    @JsonFormat(pattern="YYYY-MM-DDTHH:mm:ss")
+    @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
     LocalDateTime start;
     @NonNull
-    @JsonFormat(pattern="YYYY-MM-DDTHH:mm:ss")
+    @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
     LocalDateTime end;
     @NonNull
     Item item;

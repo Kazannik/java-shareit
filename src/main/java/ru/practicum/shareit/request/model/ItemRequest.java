@@ -25,6 +25,6 @@ public class ItemRequest {
     @NonNull
     User requestor;
     @NonNull
-    @JsonFormat(pattern="YYYY-MM-DDTHH:mm:ss")
+    @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
     LocalDateTime created;
 }

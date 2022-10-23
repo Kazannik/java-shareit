@@ -12,9 +12,9 @@ public interface ItemService {
 
     Item findItemById(Long id);
 
-    List<Item> findAll (Long userId);
+    List<Item> findAll(Long userId);
 
-    List<Item> search (String text);
+    List<Item> search(String text);
 
     void clear();
 }
