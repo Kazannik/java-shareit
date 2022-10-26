@@ -30,21 +30,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        if (!userStorage.existsUserById(user.getId())) {
-            log.debug("User {} not found", user.getId());
-            throw new NotFoundException(String.format("User %s not found.", user.getId()));
-        }
-        if (userStorage.existsUserByEmail(user.getEmail())
-                && !userStorage.findUserByEmail(user.getEmail()).get()
-                .getId().equals(user.getId())) {
+        User previous = userStorage.findUserById(user.getId())
+                .orElseGet(() -> {
+                    log.debug("User {} not found", user.getId());
+                    throw new NotFoundException(String.format("User %s not found.", user.getId()));
+                });
+        if (userStorage.findUserByEmail(user.getEmail())
+                .map(User::getId)
+                .filter(id -> !id.equals(user.getId())).isPresent()) {
             log.debug("Email address {} conflict.", user.getEmail());
             throw new ConflictArgumentsException(String.format("Email address %s conflict", user.getEmail()));
         }
-        User previous = userStorage.findUserById(user.getId()).get();
         User updateUser = userStorage.updateUser(user);
         log.debug("User updated. Before: {}, after: {}", previous, updateUser);
         return updateUser;
     }
+
 
     @Override
     public User findUserById(Long id) {

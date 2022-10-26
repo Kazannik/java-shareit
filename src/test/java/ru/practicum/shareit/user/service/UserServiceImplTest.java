@@ -15,9 +15,9 @@ import ru.practicum.shareit.user.model.User;
 class UserServiceImplTest {
 
     @Autowired
-    UserController controller;
+    private UserController controller;
     @Autowired
-    UserService service;
+    private UserService service;
 
     @BeforeEach
     void beforeEach() {
@@ -40,8 +40,8 @@ class UserServiceImplTest {
     @Test
     void createUserExistEmail() {
         controller.createUser(new UserDto("user", "user@user.com"));
-        final ConflictArgumentsException emailConflictArgumentsException
-                = Assertions.assertThrows(ConflictArgumentsException.class,
+        final ConflictArgumentsException emailConflictArgumentsException =
+                Assertions.assertThrows(ConflictArgumentsException.class,
                 () -> service.createUser(new User("user", "user@user.com")));
         Assertions.assertEquals("Email address user@user.com conflict",
                 emailConflictArgumentsException.getMessage());

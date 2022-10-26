@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
-
+    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
     private final ItemService itemService;
     private final ItemMapper itemMapper;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto createItem(@Valid @NotNull @RequestBody ItemDto itemDto,
-                              @Valid @NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
+                              @Valid @NotNull @RequestHeader(HEADER_USER_ID) Long userId) {
         Item item = itemMapper.toItem(userId, itemDto);
         item = itemService.createItem(item);
         return itemMapper.toItemDto(item);
@@ -37,7 +37,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@Valid @NotNull @RequestBody ItemDto itemDto, @PathVariable Long itemId,
-                              @Valid @NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
+                              @Valid @NotNull @RequestHeader(HEADER_USER_ID) Long userId) {
         Item oldItem = itemService.findItemById(itemId);
         Item item = itemService.updateItem(userId, itemMapper.patchItem(oldItem, itemDto));
         return itemMapper.toItemDto(item);
@@ -50,7 +50,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findAll(@Valid @NotNull @RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDto> findAll(@Valid @NotNull @RequestHeader(HEADER_USER_ID) Long userId) {
         return itemService.findAll(userId).stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());

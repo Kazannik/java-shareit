@@ -29,7 +29,7 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public Item createItem(Item item) {
-        item = new Item(item.getName(), item.getDescription(), item.getAvailable(), item.getOwner());
+        item = new Item(item.getName(), item.getDescription(), item.isAvailable(), item.getOwner());
         item.setId(nextIdGenerator());
         items.put(item.getId(), item);
         log.debug("{} has been added.", item);
@@ -68,7 +68,7 @@ public class InMemoryItemStorage implements ItemStorage {
             return new ArrayList<>();
         } else {
             return items.values().stream()
-                    .filter(Item::getAvailable)
+                    .filter(Item::isAvailable)
                     .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
                             || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                     .collect(Collectors.toList());

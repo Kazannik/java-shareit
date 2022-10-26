@@ -1,32 +1,37 @@
 package ru.practicum.shareit.item.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import ru.practicum.shareit.request.model.ItemRequest;
 
 import javax.validation.constraints.NotBlank;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Getter
 @ToString
 @EqualsAndHashCode
-@RequiredArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Item {
+
+    public Item(String name, String description, boolean available, Long owner) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+    }
+
     @Setter
-    Long id;
+    private Long id;
     @NonNull
     @NotBlank
-    String name;
+    private final String name;
     @NonNull
     @NotBlank
-    String description;
+    private final String description;
+    private final boolean available;
     @NonNull
-    Boolean available;
-    @NonNull
-    Long owner;
+    private final Long owner;
     @Setter
-    ItemRequest request;
+    private ItemRequest request;
+
+    public boolean isAvailable() {
+        return available;
+    }
 }

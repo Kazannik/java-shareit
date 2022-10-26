@@ -17,7 +17,7 @@ public class ItemMapperImpl implements ItemMapper {
     public Item patchItem(Item item, ItemDto dto) {
         Item patchedItem = new Item(dto.getName() != null ? dto.getName() : item.getName(),
                 dto.getDescription() != null ? dto.getDescription() : item.getDescription(),
-                dto.getAvailable() != null ? dto.getAvailable() : item.getAvailable(),
+                dto.getAvailable() != null ? dto.getAvailable() : item.isAvailable(),
                 item.getOwner());
         patchedItem.setId(item.getId());
         return patchedItem;
@@ -28,7 +28,7 @@ public class ItemMapperImpl implements ItemMapper {
         return new ItemDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable(),
+                item.isAvailable(),
                 item.getRequest() != null ? item.getRequest().getId() : null
         );
     }

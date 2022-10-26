@@ -19,67 +19,55 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException e) {
         log.debug("[NOT FOUND]: {}", e.getMessage());
-        return new ErrorResponse(
-                e.getMessage()
-        );
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNullPointerException(final NullPointerException e) {
-        log.error("[BAD REQUEST]: {}", e);
-        return new ErrorResponse(
-                e.getMessage());
+        log.error("[BAD REQUEST]: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleAccessForbiddenException(final AccessForbiddenException e) {
-        log.error("[FORBIDDEN]: {}", e);
-        return new ErrorResponse(
-                e.getMessage());
+        log.error("[FORBIDDEN]: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        log.error("[BAD REQUEST]: {}", e);
-        return new ErrorResponse(
-                e.getMessage());
+        log.error("[BAD REQUEST]: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictArgumentsException(final ConflictArgumentsException e) {
-        log.error("[CONFLICT]: {}", e);
-        return new ErrorResponse(
-                e.getMessage());
+        log.error("[CONFLICT]: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
         log.debug("[BAD REQUEST]: {}", e.getMessage());
-        return new ErrorResponse(
-                e.getMessage()
-        );
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleException(final HttpMessageConversionException e) {
         log.debug("[BAD_REQUEST]: {}", e.getMessage());
-        return new ErrorResponse(
-                e.getMessage()
-        );
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final Exception e) {
         log.debug("[SERVER ERROR]: {}", e.getMessage());
-        return new ErrorResponse(
-                e.getMessage()
-        );
+        return new ErrorResponse(e.getMessage());
     }
 }

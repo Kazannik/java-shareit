@@ -1,8 +1,8 @@
 package ru.practicum.shareit.booking.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import ru.practicum.shareit.booking.BookingStatusEnum;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -15,20 +15,19 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Booking {
     @NonNull
     Long id;
     @NonNull
     @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
-    LocalDateTime start;
+    private LocalDateTime start;
     @NonNull
     @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
-    LocalDateTime end;
+    private LocalDateTime end;
     @NonNull
-    Item item;
+    private Item item;
     @NonNull
-    User booker;
+    private User booker;
     @NonNull
-    String status;
+    private BookingStatusEnum status;
 }

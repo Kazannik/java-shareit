@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import ru.practicum.shareit.booking.BookingStatusEnum;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -30,5 +31,5 @@ public class BookingDto {
     @NonNull
     User booker;
     @NonNull
-    String status;
+    BookingStatusEnum status;
 }

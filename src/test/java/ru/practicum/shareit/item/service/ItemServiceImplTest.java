@@ -19,15 +19,15 @@ import ru.practicum.shareit.user.service.UserService;
 class ItemServiceImplTest {
 
     @Autowired
-    ItemController controller;
+    private ItemController controller;
     @Autowired
-    ItemService service;
+    private ItemService service;
 
     @Autowired
-    UserController userController;
+    private UserController userController;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @BeforeEach
     void beforeEach() {

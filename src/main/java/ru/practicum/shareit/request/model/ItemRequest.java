@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
@@ -15,16 +14,15 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemRequest {
     @NonNull
-    Long id;
+    private Long id;
     @NonNull
     @NotBlank
-    String description;
+    private String description;
     @NonNull
-    User requestor;
+    private User requestor;
     @NonNull
     @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
-    LocalDateTime created;
+    private LocalDateTime created;
 }
