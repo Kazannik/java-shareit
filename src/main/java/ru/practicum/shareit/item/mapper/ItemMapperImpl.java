@@ -17,18 +17,23 @@ public class ItemMapperImpl implements ItemMapper {
 
     @Override
     public Item toItem(User owner, ItemDto dto) {
-        Item item = new Item(dto.getName(), dto.getDescription(), dto.getAvailable(), owner);
+        Item item = new Item();
         item.setId(dto.getId());
+        item.setName(dto.getName());
+        item.setDescription(dto.getDescription());
+        item.setAvailable(dto.getAvailable());
+        item.setOwner(owner);
         return item;
     }
 
     @Override
     public Item patchItem(Item item, ItemDto dto) {
-        Item patchedItem = new Item(dto.getName() != null ? dto.getName() : item.getName(),
-                dto.getDescription() != null ? dto.getDescription() : item.getDescription(),
-                dto.getAvailable() != null ? dto.getAvailable() : item.isAvailable(),
-                item.getOwner());
+        Item patchedItem = new Item();
         patchedItem.setId(item.getId());
+        patchedItem.setName(dto.getName() != null ? dto.getName() : item.getName());
+        patchedItem.setDescription(dto.getDescription() != null ? dto.getDescription() : item.getDescription());
+        patchedItem.setAvailable(dto.getAvailable() != null ? dto.getAvailable() : item.isAvailable());
+        patchedItem.setOwner(item.getOwner());
         return patchedItem;
     }
 

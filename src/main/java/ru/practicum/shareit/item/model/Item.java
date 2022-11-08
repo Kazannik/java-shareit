@@ -12,14 +12,9 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "items")
 public class Item {
-    public Item(@NonNull String name, @NonNull String description, boolean available, @NonNull User owner) {
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.owner = owner;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +27,6 @@ public class Item {
     @NotBlank
     @Column
     private String description;
-    @NonNull
     @Column(name = "is_available")
     private boolean available;
     @NonNull
@@ -43,7 +37,4 @@ public class Item {
     @JoinColumn(name = "request_id", referencedColumnName = "id")
     private ItemRequest request;
 
-    public boolean isAvailable() {
-        return available;
-    }
 }
