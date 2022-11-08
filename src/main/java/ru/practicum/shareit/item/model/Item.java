@@ -31,7 +31,7 @@ public class Item {
     private boolean available;
     @NonNull
     @ManyToOne
-    @JoinColumn(name = "id_owner", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
     @ManyToOne
     @JoinColumn(name = "request_id", referencedColumnName = "id")
