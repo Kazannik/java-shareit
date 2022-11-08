@@ -1,35 +1,30 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
-import ru.practicum.shareit.booking.BookingStatusEnum;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import ru.practicum.shareit.booking.enums.BookingStatusEnum;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Getter
-@ToString
-@EqualsAndHashCode
-@RequiredArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookingDto {
-    @NonNull
-    Long id;
-    @NonNull
-    @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
-    LocalDateTime start;
-    @NonNull
-    @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
-    LocalDateTime end;
-    @NonNull
-    Item item;
-    @NonNull
-    User booker;
-    @NonNull
-    BookingStatusEnum status;
+    private Long id;
+    @NotNull
+    @Future
+    private LocalDateTime start;
+    @NotNull
+    @Future
+    private LocalDateTime end;
+    private Long itemId;
+    private Long bookerId;
+    private ItemDto item;
+    private UserDto booker;
+    private BookingStatusEnum status;
 }

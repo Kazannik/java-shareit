@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.model;
+package ru.practicum.shareit.item.model;
 
 import lombok.*;
 import ru.practicum.shareit.user.model.User;
@@ -12,20 +12,24 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @RequiredArgsConstructor
-@Table(name = "requests")
-public class ItemRequest {
-    @NonNull
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Setter
     @NonNull
     @NotBlank
-    @Column(nullable = false)
-    private String description;
-    @NonNull
+    @Column()
+    private String text;
+    @Setter
     @ManyToOne
-    @JoinColumn(name = "requestor_id", referencedColumnName = "id")
-    private User requestor;
-    @NonNull
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
+    private Item item;
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    private User author;
+    @Setter
     private LocalDateTime created;
 }

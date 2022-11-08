@@ -6,18 +6,13 @@ import lombok.*;
 import javax.validation.constraints.Email;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
-
-    public UserDto(String name, String email) {
-        this.name = name;
-        this.email = email;
-    }
-
     Long id;
     String name;
     @Email
