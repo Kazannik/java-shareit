@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @Table(name = "items")
@@ -20,7 +21,6 @@ public class Item {
         this.owner = owner;
     }
 
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,13 +32,13 @@ public class Item {
     @NotBlank
     @Column
     private String description;
+    @NonNull
     @Column(name = "is_available")
     private boolean available;
     @NonNull
     @ManyToOne
     @JoinColumn(name = "id_owner", referencedColumnName = "id", nullable = false)
     private User owner;
-    @Setter
     @ManyToOne
     @JoinColumn(name = "request_id", referencedColumnName = "id")
     private ItemRequest request;
