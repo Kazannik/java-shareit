@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
 import java.util.List;
@@ -9,16 +10,16 @@ import java.util.List;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
-@NoArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ItemDto {
-    private Long id;
-    private String name;
-    private String description;
-    private Boolean available;
-    private Long requestId;
+    Long id;
+    String name;
+    String description;
+    Boolean available;
+    Long requestId;
     @JsonInclude()
-    private BookingDto lastBooking;
+    BookingDto lastBooking;
     @JsonInclude()
-    private BookingDto nextBooking;
-    private List<CommentDto> comments;
+    BookingDto nextBooking;
+    List<CommentDto> comments;
 }
