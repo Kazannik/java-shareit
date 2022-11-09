@@ -3,83 +3,107 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.ConflictArgumentsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
+    @Transactional
     @Override
-    public User createUser(User user) {
-        if (userStorage.existsUserByEmail(user.getEmail())) {
-            log.debug("Email address {} conflict.", user.getEmail());
-            throw new ConflictArgumentsException(String.format("Email address %s conflict", user.getEmail()));
-        }
-        User createdUser = userStorage.createUser(user);
+    public User create(User user) {
+        User createdUser = userRepository.save(user);
         log.debug("{} has been added.", createdUser);
         return createdUser;
     }
 
+    @Transactional
     @Override
-    public User updateUser(User user) {
-        User previous = userStorage.findUserById(user.getId())
+    public UserDto create(UserDto userDto) {
+        User user = userMapper.toUser(userDto);
+        return userMapper.toDto(create(user));
+    }
+
+    @Transactional
+    @Override
+    public User update(User user) {
+        User previous = userRepository.findById(user.getId())
                 .orElseGet(() -> {
                     log.debug("User {} not found", user.getId());
                     throw new NotFoundException(String.format("User %s not found.", user.getId()));
                 });
-        if (userStorage.findUserByEmail(user.getEmail())
+        if (userRepository.findByEmail(user.getEmail())
                 .map(User::getId)
                 .filter(id -> !id.equals(user.getId())).isPresent()) {
             log.debug("Email address {} conflict.", user.getEmail());
             throw new ConflictArgumentsException(String.format("Email address %s conflict", user.getEmail()));
         }
-        User updateUser = userStorage.updateUser(user);
+        User updateUser = userRepository.save(user);
         log.debug("User updated. Before: {}, after: {}", previous, updateUser);
         return updateUser;
     }
 
-
+    @Transactional
     @Override
-    public User findUserById(Long id) {
-        return userStorage.findUserById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("User %s not found.", id)));
+    public UserDto update(Long userId, UserDto userDto) {
+        User oldUser = findById(userId);
+        return userMapper.toDto(update(userMapper.patchUser(oldUser, userDto)));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public boolean existsUserById(Long id) {
-        return userStorage.existsUserById(id);
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("User %s not found.", userId)));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public boolean existsUserByEmail(String email) {
-        return userStorage.existsUserByEmail(email);
+    public UserDto findByIdToDto(Long userId) {
+        return userMapper.toDto(findById(userId));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public void removeUser(Long id) {
-        if (!userStorage.existsUserById(id)) {
-            log.debug("User {} not found", id);
-            throw new NotFoundException(String.format("User %s not found.", id));
+    public boolean existsById(Long userId) {
+        return userRepository.existsById(userId);
+    }
+
+    @Transactional
+    @Override
+    public void remove(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            log.debug("User {} not found", userId);
+            throw new NotFoundException(String.format("User %s not found.", userId));
         }
-        userStorage.deleteById(id);
-        log.debug("User id {} has been removed.", id);
+        userRepository.deleteById(userId);
+        log.debug("User id {} has been removed.", userId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<User> findAll() {
-        return userStorage.findAll();
+        return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public void clear() {
-        userStorage.clear();
+    public List<UserDto> findAllToDto() {
+        return findAll().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

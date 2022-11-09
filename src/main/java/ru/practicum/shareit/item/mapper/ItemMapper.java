@@ -1,16 +1,21 @@
 package ru.practicum.shareit.item.mapper;
 
-import org.mapstruct.Mapper;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
-@Mapper
+import java.util.List;
+
 public interface ItemMapper {
 
-    Item toItem(Long userId, ItemDto dto);
+    Item toItem(User owner, ItemDto dto);
 
     Item patchItem(Item item, ItemDto dto);
 
-    ItemDto toItemDto(Item item);
+    ItemDto toDto(Item item, BookingDto lastBooking, BookingDto nextBooking, List<CommentDto> comments);
+
+    ItemDto toDto(Item item);
 
 }

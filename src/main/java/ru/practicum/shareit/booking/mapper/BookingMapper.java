@@ -1,13 +1,15 @@
 package ru.practicum.shareit.booking.mapper;
 
-import org.mapstruct.Mapper;
-
-import ru.practicum.shareit.booking.model.Booking;
+import lombok.NonNull;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
-@Mapper
 public interface BookingMapper {
 
-    Booking toBooking(BookingDto dto);
+    BookingDto toDto(Booking booking);
+
+    Booking toBooking(@NonNull BookingDto dto, @NonNull Item item, @NonNull User user);
 
 }

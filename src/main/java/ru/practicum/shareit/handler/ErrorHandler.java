@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exceptions.AccessForbiddenException;
+import ru.practicum.shareit.exceptions.ArgumentNotValidException;
 import ru.practicum.shareit.exceptions.ConflictArgumentsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
@@ -44,6 +45,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler()
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleArgumentNotValidException(final ArgumentNotValidException e) {
+        log.error("[BAD REQUEST]: {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler()
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictArgumentsException(final ConflictArgumentsException e) {
         log.error("[CONFLICT]: {}", e.getMessage());
@@ -67,7 +75,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final Exception e) {
-        log.debug("[SERVER ERROR]: {}", e.getMessage());
+        log.error("[SERVER ERROR]: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 }

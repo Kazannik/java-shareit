@@ -1,33 +1,41 @@
 package ru.practicum.shareit.booking.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import ru.practicum.shareit.booking.BookingStatusEnum;
+import ru.practicum.shareit.booking.enums.BookingStatusEnum;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
+@Entity
 @Getter
+@Setter
 @ToString
-@EqualsAndHashCode
+@NoArgsConstructor
 @RequiredArgsConstructor
+@AllArgsConstructor
+@Table(name = "bookings")
 public class Booking {
     @NonNull
-    Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @NonNull
-    @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
+    @Column(name = "start_date", nullable = false)
     private LocalDateTime start;
     @NonNull
-    @JsonFormat(pattern = "YYYY-MM-DDTHH:mm:ss")
+    @Column(name = "end_date", nullable = false)
     private LocalDateTime end;
-    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
     private Item item;
-    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "booker_id", referencedColumnName = "id", nullable = false)
     private User booker;
+    @Setter
     @NonNull
-    private BookingStatusEnum status;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 8)
+    private BookingStatusEnum status = BookingStatusEnum.WAITING;
 }

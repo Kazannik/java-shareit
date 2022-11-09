@@ -9,8 +9,12 @@ public interface UserMapper {
 
     User toUser(UserDto dto);
 
-    User patchUser(User user, UserDto dto);
+    UserDto toDto(User user);
 
-    UserDto toUserDto(User user);
-
+    default User patchUser(User user, UserDto dto) {
+        User patchedUser = new User(dto.getName() != null ? dto.getName() : user.getName(),
+                dto.getEmail() != null ? dto.getEmail() : user.getEmail());
+        patchedUser.setId(user.getId());
+        return patchedUser;
+    }
 }
