@@ -1,16 +1,14 @@
 package ru.practicum.shareit.request.mapper;
 
-import org.mapstruct.Mapper;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 
-/**
- * TODO Sprint add-item-requests.
- */
-@Mapper(componentModel = "spring")
+import java.util.List;
+
 public interface ItemRequestMapper {
 
-    ItemRequestDto toDto(ItemRequest itemRequest);
+    ItemRequestDto toDto(ItemRequest itemRequest, List<ItemDto> items);
 
     ItemRequest toItemRequest(ItemRequestDto dto);
 

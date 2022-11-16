@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -85,11 +84,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void remove(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            log.debug("User {} not found", userId);
-            throw new NotFoundException(String.format("User %s not found.", userId));
-        }
-        userRepository.deleteById(userId);
+        if (userValidated(userId))
+            userRepository.deleteById(userId);
         log.debug("User id {} has been removed.", userId);
     }
 
@@ -105,5 +101,14 @@ public class UserServiceImpl implements UserService {
         return findAll().stream()
                 .map(userMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean userValidated(Long id) {
+        if (!existsById(id)) {
+            log.debug("User {} not found", id);
+            throw new NotFoundException(String.format("User %s not found.", id));
+        }
+        return true;
     }
 }

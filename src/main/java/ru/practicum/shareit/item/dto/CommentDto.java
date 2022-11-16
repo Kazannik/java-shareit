@@ -18,4 +18,10 @@ public class CommentDto {
     private String text;
     private String authorName;
     private LocalDateTime created;
+
+    public CommentDto(Long id, @NonNull String text, String authorName) {
+        this.id = id;
+        this.text = text;
+        this.authorName = authorName;
+    }
 }

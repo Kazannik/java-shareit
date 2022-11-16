@@ -6,6 +6,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -16,12 +17,13 @@ import java.util.List;
 public class ItemMapperImpl implements ItemMapper {
 
     @Override
-    public Item toItem(User owner, ItemDto dto) {
+    public Item toItem(User owner, ItemDto dto, ItemRequest request) {
         Item item = new Item();
         item.setId(dto.getId());
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
         item.setAvailable(dto.getAvailable());
+        item.setRequest(request);
         item.setOwner(owner);
         return item;
     }

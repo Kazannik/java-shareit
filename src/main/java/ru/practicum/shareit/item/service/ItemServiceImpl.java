@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -17,6 +18,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -33,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingService bookingService;
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
 
@@ -47,7 +51,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
-        Item item = itemMapper.toItem(userService.findById(userId), itemDto);
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            itemRequest = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException(String.format("Request %s not found.",
+                            itemDto.getRequestId())));
+        }
+        Item item = itemMapper.toItem(userService.findById(userId), itemDto, itemRequest);
         return toDto(userId, create(item));
     }
 
@@ -61,9 +71,9 @@ public class ItemServiceImpl implements ItemService {
             throw new AccessForbiddenException(
                     String.format("User %s access to the item %s is forbidden.", userId, item.getId()));
         }
-        itemRepository.save(item);
-        log.debug("Item updated. Before: {}, after: {}", previous, item);
-        return item;
+        Item updatedItem = itemRepository.save(item);
+        log.debug("Item updated. Before: {}, after: {}", previous, updatedItem);
+        return updatedItem;
     }
 
     @Override
@@ -88,39 +98,57 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Item> findAllByOwnerId(Long userId) {
-        return itemRepository.findAllByOwnerId(userId);
+    public List<Item> findAllByOwnerId(Long userId, Integer from, Integer size) {
+        if (pageValidated(from, size)) {
+            return itemRepository.findAllByOwnerId(userId, PageRequest.of(from / size, size)).toList();
+        } else {
+            return itemRepository.findAllByOwnerId(userId);
+        }
     }
 
     @Override
-    public List<ItemDto> findAllByOwnerIdToDto(Long userId) {
-        return findAllByOwnerId(userId).stream()
+    public List<ItemDto> findAllByOwnerIdToDto(Long userId, Integer from, Integer size) {
+        return findAllByOwnerId(userId, from, size).stream()
+                .map(i -> toDto(userId, i))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Item> findAllByRequestId(Long requestId) {
+        return itemRepository.findAllByRequestId(requestId);
+    }
+
+    @Override
+    public List<ItemDto> findAllByRequestIdToDto(Long userId, Long requestId) {
+        return findAllByRequestId(requestId).stream()
                 .map(i -> toDto(userId, i))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Item> search(String text) {
+    public List<Item> search(String text, Integer from, Integer size) {
         if (text == null || text.isBlank()) {
             return new ArrayList<>();
         } else {
-            return itemRepository.searchTextIgnoreCase(text.toLowerCase());
+            if (pageValidated(from, size)) {
+                return itemRepository.searchTextIgnoreCase(text,
+                        PageRequest.of(from / size, size)).toList();
+            } else {
+                return itemRepository.searchTextIgnoreCase(text);
+            }
         }
     }
 
     @Override
-    public List<ItemDto> searchToDto(Long userId, String text) {
-        return search(text).stream()
+    public List<ItemDto> searchToDto(Long userId, String text, Integer from, Integer size) {
+        return search(text, from, size).stream()
                 .map(i -> toDto(userId, i))
                 .collect(Collectors.toList());
     }
 
     private void itemValidated(Item item) {
-        if (!userService.existsById(item.getOwner().getId())) {
-            log.debug("User {} not found", item.getOwner().getId());
-            throw new NotFoundException(String.format("User %s not found.", item.getOwner().getId()));
-        }
+        userService.userValidated(item.getOwner().getId());
         if (item.getName().isBlank()) {
             log.debug("Item {} name not correct", item.getOwner());
             throw new NullPointerException(String.format("Item %s name not correct.", item.getOwner()));
@@ -144,8 +172,9 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(item);
         comment.setAuthor(user);
         comment.setCreated(LocalDateTime.now());
-        commentRepository.save(comment);
-        return comment;
+        Comment createdComment = commentRepository.save(comment);
+        log.debug("{} has been added.", createdComment);
+        return createdComment;
     }
 
     @Override
@@ -166,5 +195,22 @@ public class ItemServiceImpl implements ItemService {
         return commentRepository.findAllByItemId(itemId).stream()
                 .map(commentMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    private boolean pageValidated(Integer from, Integer size) {
+        if (from != null && size != null) {
+            if (from < 0) {
+                log.debug("Row index {} must not be less than zero", from);
+                throw new ArgumentNotValidException(
+                        String.format("Row index %s must not be less than zero.", from));
+            } else if (size < 1) {
+                log.debug("Size {} of the page to be returned, must be greater than zero", size);
+                throw new ArgumentNotValidException(
+                        String.format("Size %s of the page to be returned, must be greater than zero.", size));
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 }

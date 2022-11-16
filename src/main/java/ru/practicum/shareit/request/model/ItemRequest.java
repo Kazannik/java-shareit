@@ -12,21 +12,22 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Table(name = "requests")
 public class ItemRequest {
-    @NonNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NonNull
     @NotBlank
     @Column(nullable = false)
     private String description;
-    @NonNull
     @ManyToOne
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;
-    @NonNull
     private LocalDateTime created;
+
+    public ItemRequest(Long id, String description, LocalDateTime created) {
+        this.id = id;
+        this.description = description;
+        this.created = created;
+    }
 }

@@ -13,9 +13,9 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "items")
 public class Item {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,6 +27,7 @@ public class Item {
     @NotBlank
     @Column
     private String description;
+    @NonNull
     @Column(name = "is_available")
     private boolean available;
     @NonNull

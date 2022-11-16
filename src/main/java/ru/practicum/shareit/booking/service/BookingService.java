@@ -15,13 +15,13 @@ public interface BookingService {
 
     BookingDto approveToDto(Long bookingId, Long userId, Boolean approved);
 
-    List<Booking> findAllByOwner(Long userId, String state);
+    List<Booking> findAllByOwner(Long userId, String state, Integer from, Integer size);
 
-    List<BookingDto> findAllByOwnerToDto(Long userId, String state);
+    List<BookingDto> findAllByOwnerToDto(Long userId, String state, Integer from, Integer size);
 
-    List<Booking> findAllByUser(Long userId, String state);
+    List<Booking> findAllByUser(Long userId, String state, Integer from, Integer size);
 
-    List<BookingDto> findAllByUserToDto(Long userId, String state);
+    List<BookingDto> findAllByUserToDto(Long userId, String state, Integer from, Integer size);
 
     Booking findByIdAndBookerId(Long bookingId, Long userId);
 

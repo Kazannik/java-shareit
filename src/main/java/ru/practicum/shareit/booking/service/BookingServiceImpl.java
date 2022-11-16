@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.enums.BookingFilterEnum;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.repository.queries.BookingQueryManager;
 import ru.practicum.shareit.exceptions.ArgumentNotValidException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -31,6 +32,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserService userService;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
+    private final BookingQueryManager bookingQueryManager;
     private final BookingMapper bookingMapper;
     private final Sort sort = Sort.by(Sort.Direction.DESC, "start");
 
@@ -95,60 +97,28 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Booking> findAllByOwner(Long userId, String state) {
-        User user = userService.findById(userId);
-        switch (BookingFilterEnum.of(state)) {
-            case ALL:
-                return bookingRepository.findAllByItemOwner(user, sort);
-            case CURRENT:
-                return bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(user, LocalDateTime.now(),
-                        LocalDateTime.now(), sort);
-            case PAST:
-                return bookingRepository.findAllByItemOwnerAndEndBefore(user, LocalDateTime.now(), sort);
-            case FUTURE:
-                return bookingRepository.findAllByItemOwnerAndStartAfter(user, LocalDateTime.now(), sort);
-            case WAITING:
-                return bookingRepository.findAllByItemOwnerAndStatusEquals(user, WAITING, sort);
-            case REJECTED:
-                return bookingRepository.findAllByItemOwnerAndStatusEquals(user, REJECTED, sort);
-            default:
-                throw new ArgumentNotValidException(UNKNOWN_STATE_MESSAGE + state);
-        }
+    public List<Booking> findAllByOwner(Long userId, String state, Integer from, Integer size) {
+        return findAllBy(true, userId, state, from, size);
     }
 
     @Override
-    public List<BookingDto> findAllByOwnerToDto(Long userId, String state) {
-        return findAllByOwner(userId, state).stream()
+    public List<BookingDto> findAllByOwnerToDto(Long userId, String state,
+                                                Integer from, Integer size) {
+        return findAllByOwner(userId, state, from, size).stream()
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Booking> findAllByUser(Long userId, String state) {
-        User user = userService.findById(userId);
-        switch (BookingFilterEnum.of(state)) {
-            case ALL:
-                return bookingRepository.findAllByBooker(user, sort);
-            case CURRENT:
-                return bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(user, LocalDateTime.now(),
-                        LocalDateTime.now(), sort);
-            case PAST:
-                return bookingRepository.findAllByBookerAndEndBefore(user, LocalDateTime.now(), sort);
-            case FUTURE:
-                return bookingRepository.findAllByBookerAndStartAfter(user, LocalDateTime.now(), sort);
-            case WAITING:
-                return bookingRepository.findAllByBookerAndStatusEquals(user, WAITING, sort);
-            case REJECTED:
-                return bookingRepository.findAllByBookerAndStatusEquals(user, REJECTED, sort);
-            default:
-                throw new ArgumentNotValidException(UNKNOWN_STATE_MESSAGE + state);
-        }
+    public List<Booking> findAllByUser(Long userId, String state, Integer from, Integer size) {
+        return findAllBy(false, userId, state, from, size);
     }
 
     @Override
-    public List<BookingDto> findAllByUserToDto(Long userId, String state) {
-        return findAllByUser(userId, state).stream()
+    public List<BookingDto> findAllByUserToDto(Long userId, String state,
+                                               Integer from, Integer size) {
+        return findAllByUser(userId, state, from, size).stream()
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -197,8 +167,31 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(findNextBooking(itemId));
     }
 
+    private List<Booking> findAllBy(boolean isOwner, Long userId, String state,
+                                    Integer from, Integer size) {
+        User user = userService.findById(userId);
+        switch (BookingFilterEnum.of(state)) {
+            case ALL:
+                return bookingQueryManager.findBy(0, isOwner, user, sort, from, size);
+            case CURRENT:
+                return bookingQueryManager.findBy(1, isOwner, user, sort, from, size);
+            case PAST:
+                return bookingQueryManager.findBy(2, isOwner, user, sort, from, size);
+            case FUTURE:
+                return bookingQueryManager.findBy(3, isOwner, user, sort, from, size);
+            case WAITING:
+                return bookingQueryManager.findBy(4, isOwner, user, WAITING, sort, from, size);
+            case REJECTED:
+                return bookingQueryManager.findBy(4, isOwner, user, REJECTED, sort, from, size);
+            default:
+                throw new ArgumentNotValidException(UNKNOWN_STATE_MESSAGE + state);
+        }
+    }
+
+
     private Item findItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Item %s not found.", id)));
     }
+
 }
