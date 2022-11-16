@@ -8,13 +8,15 @@ import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.enums.BookingStatusEnum;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.ArgumentNotValidException;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
+
+import static ru.practicum.shareit.utils.PaginationValid.pageValidated;
 
 @Slf4j
 @Component
@@ -69,30 +71,14 @@ public class BookingQueryManager {
             index += 10;
             arg.setBooker(user);
         }
-        if (pageValidated(from, size)) {
+        Optional<PageRequest> pageRequest = pageValidated(from, size);
+        if (pageRequest.isPresent()) {
             index += 5;
-            arg.setPageable(PageRequest.of(from / size, size, sort));
+            arg.setPageable(pageRequest.get().withSort(sort));
         } else {
             arg.setSort(sort);
         }
         return listQueries.get(index).apply(arg);
-    }
-
-    private boolean pageValidated(Integer from, Integer size) {
-        if (from != null && size != null) {
-            if (from < 0) {
-                log.debug("Row index {} must not be less than zero", from);
-                throw new ArgumentNotValidException(
-                        String.format("Row index %s must not be less than zero.", from));
-            } else if (size < 1) {
-                log.debug("Size {} of the page to be returned, must be greater than zero", size);
-                throw new ArgumentNotValidException(
-                        String.format("Size %s of the page to be returned, must be greater than zero.", size));
-            }
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private static List<Booking> f1(QueryArgument arg) {

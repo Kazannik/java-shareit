@@ -44,12 +44,10 @@ public class BookingServiceImpl implements BookingService {
                     booking.getItem().getOwner().getId(), booking.getItem().getId());
             throw new NotFoundException(String.format("User %s does not have access to the Item %s.",
                     booking.getItem().getOwner().getId(), booking.getItem().getId()));
-        }
-        if (!booking.getItem().isAvailable()) {
+        } else if (!booking.getItem().isAvailable()) {
             log.debug("Item {} is not available", booking.getItem().getId());
             throw new ArgumentNotValidException(String.format("Item %s is not available.", booking.getItem().getId()));
-        }
-        if (booking.getEnd().isBefore(booking.getStart())) {
+        } else if (booking.getEnd().isBefore(booking.getStart())) {
             log.debug("It is not possible to create a Booking. Start date not correct");
             throw new ArgumentNotValidException("It is not possible to create a Booking. Start date not correct.");
         }
@@ -75,12 +73,10 @@ public class BookingServiceImpl implements BookingService {
         if (!userId.equals(booking.getItem().getOwner().getId())) {
             log.debug("User {} does not have a Booking {}", userId, bookingId);
             throw new NotFoundException(String.format("User %s does not have a Booking %s.", userId, bookingId));
-        }
-        if (!booking.getStatus().equals(WAITING)) {
+        } else if (!booking.getStatus().equals(WAITING)) {
             log.debug("Booking {} cannot be approved", bookingId);
             throw new ArgumentNotValidException(String.format("Booking %s cannot be approved.", bookingId));
-        }
-        if (approved) {
+        } else if (approved) {
             booking.setStatus(APPROVED);
         } else {
             booking.setStatus(REJECTED);
@@ -188,10 +184,8 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-
     private Item findItemById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Item %s not found.", id)));
     }
-
 }

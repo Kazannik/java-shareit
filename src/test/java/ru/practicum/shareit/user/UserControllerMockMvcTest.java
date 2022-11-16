@@ -43,6 +43,7 @@ class UserControllerMockMvcTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(mapper.writeValueAsString(userDto)));
+
     }
 
     @Test

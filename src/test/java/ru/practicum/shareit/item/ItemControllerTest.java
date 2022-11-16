@@ -8,7 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.exceptions.AccessForbiddenException;
 import ru.practicum.shareit.exceptions.ArgumentNotValidException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserController;
@@ -39,7 +41,8 @@ class ItemControllerTest {
     @BeforeAll
     void beforeAll() {
         firstItemDto = new ItemDto(1L, "first item name", "description", true);
-        secondItemDto = new ItemDto(2L, "second item name", "description", true);
+        secondItemDto = new ItemDto(2L, "second item name", "description", true,
+                77L);
         firstUserDto = new UserDto(1L, "first username", "first@email.com");
         secondUserDto = new UserDto(2L, "second username", "second@email.com");
         comment = new CommentDto(1L, "text", "author");
@@ -57,11 +60,30 @@ class ItemControllerTest {
     }
 
     @Test
+    void createItemNotValidArgumentTest() {
+        userController.create(firstUserDto);
+        itemController.create(firstItemDto, 1L);
+        assertThrows(NullPointerException.class, () -> itemController
+                .create(new ItemDto(1L, "", "description", true), 1L));
+        assertThrows(NullPointerException.class, () -> itemController
+                .create(new ItemDto(1L, "name", "", true), 1L));
+        assertThrows(NotFoundException.class, () -> itemController.create(secondItemDto, 1L));
+    }
+
+    @Test
     void updateItemTest() {
         userController.create(firstUserDto);
         itemController.create(firstItemDto, 1L);
         itemController.update(secondItemDto, 1L, 1L);
         assertEquals(secondItemDto.getName(), itemController.findById(1L, 1L).getName());
+    }
+
+    @Test
+    void updateItemAccessForbiddenExceptionTest() {
+        userController.create(firstUserDto);
+        itemController.create(firstItemDto, 1L);
+        itemController.update(secondItemDto, 1L, 1L);
+        assertThrows(AccessForbiddenException.class, () -> itemController.update(secondItemDto, 1L, 2L));
     }
 
     @Test
@@ -83,6 +105,7 @@ class ItemControllerTest {
         userController.create(firstUserDto);
         itemController.create(firstItemDto, 1L);
         assertEquals(1, itemController.search(1L, "ScRiPt", null, null).size());
+        assertEquals(1, itemController.search(1L, "RIP", 0, 5).size());
     }
 
     @Test
@@ -90,6 +113,7 @@ class ItemControllerTest {
         userController.create(firstUserDto);
         itemController.create(firstItemDto, 1L);
         assertEquals(0, itemController.search(1L, "cRiPtO", null, null).size());
+        assertEquals(0, itemController.search(1L, "", 0, 5).size());
     }
 
     @Test
@@ -104,6 +128,17 @@ class ItemControllerTest {
     }
 
     @Test
+    void createCommentArgumentNotValidExceptionTest() {
+        userController.create(firstUserDto);
+        ItemDto item = itemController.create(firstItemDto, 1L);
+        UserDto secondUser = userController.create(secondUserDto);
+        bookingController.create(booking, secondUser.getId());
+        bookingController.approve(1L, 1L, false);
+        assertThrows(ArgumentNotValidException.class, () -> itemController
+                .create(item.getId(), secondUser.getId(), comment));
+    }
+
+    @Test
     void paginationTest() {
         userController.create(firstUserDto);
         itemController.create(firstItemDto, 1L);
@@ -115,5 +150,6 @@ class ItemControllerTest {
         userController.create(firstUserDto);
         itemController.create(firstItemDto, 1L);
         assertThrows(ArgumentNotValidException.class, () -> itemController.findAll(1L, -1, 0));
+        assertThrows(ArgumentNotValidException.class, () -> itemController.findAll(1L, 0, 0));
     }
 }

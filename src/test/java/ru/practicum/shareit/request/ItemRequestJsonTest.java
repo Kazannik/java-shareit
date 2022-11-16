@@ -10,14 +10,16 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-class ItemRequestJsonTest {
+public class ItemRequestJsonTest {
     @Autowired
     JacksonTester<ItemRequestDto> json;
 
     @Test
-    void testItemRequestDtoTest() throws Exception {
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description");
+    void testItemRequestDto() throws Exception {
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L,"description");
+
         JsonContent<ItemRequestDto> result = json.write(itemRequestDto);
+
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("description");
     }

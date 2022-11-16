@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exceptions.ArgumentNotValidException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -17,7 +16,10 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.utils.PaginationValid.pageValidated;
 
 @Slf4j
 @Service
@@ -49,12 +51,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequest> getAllByUser(Long userId, Integer from, Integer size) {
         userService.userValidated(userId);
-        if (pageValidated(from, size)) {
-            return itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId,
-                    PageRequest.of(from, size)).toList();
-        } else {
-            return itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId);
-        }
+        Optional<PageRequest> pageRequest = pageValidated(from, size);
+        return pageRequest.map(request -> itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId,
+                request).toList()).orElseGet(() -> itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId));
     }
 
     @Override
@@ -68,12 +67,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequest> getAll(Long userId, Integer from, Integer size) {
         User user = userService.findById(userId);
-        if (pageValidated(from, size)) {
-            return itemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(user,
-                    PageRequest.of(from, size)).toList();
-        } else {
-            return itemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(user);
-        }
+        Optional<PageRequest> pageRequest = pageValidated(from, size);
+        return pageRequest.map(request -> itemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(user,
+                request).toList()).orElseGet(() -> itemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(user));
     }
 
     @Override
@@ -96,22 +92,5 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestDto getByIdToDto(Long requestId, Long userId) {
         return itemRequestMapper.toDto(getById(requestId, userId),
                 itemService.findAllByRequestIdToDto(userId, requestId));
-    }
-
-    private boolean pageValidated(Integer from, Integer size) {
-        if (from != null && size != null) {
-            if (from < 0) {
-                log.debug("Row index {} must not be less than zero", from);
-                throw new ArgumentNotValidException(
-                        String.format("Row index %s must not be less than zero.", from));
-            } else if (size < 1) {
-                log.debug("Size {} of the page to be returned, must be greater than zero", size);
-                throw new ArgumentNotValidException(
-                        String.format("Size %s of the page to be returned, must be greater than zero.", size));
-            }
-            return true;
-        } else {
-            return false;
-        }
     }
 }

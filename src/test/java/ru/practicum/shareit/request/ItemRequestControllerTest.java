@@ -53,14 +53,15 @@ class ItemRequestControllerTest {
         itemRequestController.create(itemRequestDto, firstUser.getId());
         assertEquals(0, itemRequestController.getAll(firstUser.getId(), null, null).size());
         UserDto secondUser = userController.create(secondUserDto);
-        assertEquals(1, itemRequestController.getAll(secondUser.getId(), null, null).size());
+        assertEquals(1, itemRequestController.getAll(secondUser.getId(), 0, 5).size());
     }
 
     @Test
     void getByIdTest() {
         UserDto user = userController.create(firstUserDto);
         itemRequestController.create(itemRequestDto, user.getId());
-        assertEquals("request description", itemRequestController.getById(1L, user.getId()).getDescription());
+        assertEquals("request description", itemRequestController.getById(1L, user.getId())
+                .getDescription());
     }
 
     @Test
@@ -68,7 +69,7 @@ class ItemRequestControllerTest {
         UserDto firstUser = userController.create(firstUserDto);
         itemRequestController.create(itemRequestDto, firstUser.getId());
         UserDto secondUser = userController.create(secondUserDto);
-        assertEquals(1, itemRequestController.getAll(secondUser.getId(), null, null).size());
+        assertEquals(1, itemRequestController.getAll(secondUser.getId(), 0, 5).size());
     }
 
     @Test
@@ -76,6 +77,9 @@ class ItemRequestControllerTest {
         UserDto firstUser = userController.create(firstUserDto);
         itemRequestController.create(itemRequestDto, firstUser.getId());
         UserDto secondUser = userController.create(secondUserDto);
-        assertThrows(ArgumentNotValidException.class, () -> itemRequestController.getAll(secondUser.getId(), -1, 0));
+        assertThrows(ArgumentNotValidException.class, () -> itemRequestController
+                .getAll(secondUser.getId(), -1, 0));
+        assertThrows(ArgumentNotValidException.class, () -> itemRequestController
+                .getAll(secondUser.getId(), 0, 0));
     }
 }

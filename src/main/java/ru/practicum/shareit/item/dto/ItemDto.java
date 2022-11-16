@@ -30,4 +30,9 @@ public class ItemDto {
         this.description = description;
         this.available = available;
     }
+
+    public ItemDto(Long id, String name, String description, Boolean available, Long requestId) {
+        this(id,name, description,available);
+        this.requestId = requestId;
+    }
 }

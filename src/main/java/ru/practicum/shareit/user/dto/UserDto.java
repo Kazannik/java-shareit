@@ -8,8 +8,6 @@ import javax.validation.constraints.Email;
 
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)

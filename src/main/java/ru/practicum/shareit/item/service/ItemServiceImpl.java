@@ -26,7 +26,10 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.utils.PaginationValid.pageValidated;
 
 @Slf4j
 @Service
@@ -99,11 +102,8 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<Item> findAllByOwnerId(Long userId, Integer from, Integer size) {
-        if (pageValidated(from, size)) {
-            return itemRepository.findAllByOwnerId(userId, PageRequest.of(from / size, size)).toList();
-        } else {
-            return itemRepository.findAllByOwnerId(userId);
-        }
+        Optional<PageRequest> pageRequest = pageValidated(from, size);
+        return pageRequest.map(request -> itemRepository.findAllByOwnerId(userId, request).toList()).orElseGet(() -> itemRepository.findAllByOwnerId(userId));
     }
 
     @Override
@@ -131,12 +131,9 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isBlank()) {
             return new ArrayList<>();
         } else {
-            if (pageValidated(from, size)) {
-                return itemRepository.searchTextIgnoreCase(text,
-                        PageRequest.of(from / size, size)).toList();
-            } else {
-                return itemRepository.searchTextIgnoreCase(text);
-            }
+            Optional<PageRequest> pageRequest = pageValidated(from, size);
+            return pageRequest.map(request -> itemRepository.searchTextIgnoreCase(text,
+                    request).toList()).orElseGet(() -> itemRepository.searchTextIgnoreCase(text));
         }
     }
 
@@ -152,8 +149,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getName().isBlank()) {
             log.debug("Item {} name not correct", item.getOwner());
             throw new NullPointerException(String.format("Item %s name not correct.", item.getOwner()));
-        }
-        if (item.getDescription().isBlank()) {
+        } else if (item.getDescription().isBlank()) {
             log.debug("Item {} description not correct", item.getOwner());
             throw new NullPointerException(String.format("Item %s description not correct.", item.getOwner()));
         }
@@ -195,22 +191,5 @@ public class ItemServiceImpl implements ItemService {
         return commentRepository.findAllByItemId(itemId).stream()
                 .map(commentMapper::toDto)
                 .collect(Collectors.toList());
-    }
-
-    private boolean pageValidated(Integer from, Integer size) {
-        if (from != null && size != null) {
-            if (from < 0) {
-                log.debug("Row index {} must not be less than zero", from);
-                throw new ArgumentNotValidException(
-                        String.format("Row index %s must not be less than zero.", from));
-            } else if (size < 1) {
-                log.debug("Size {} of the page to be returned, must be greater than zero", size);
-                throw new ArgumentNotValidException(
-                        String.format("Size %s of the page to be returned, must be greater than zero.", size));
-            }
-            return true;
-        } else {
-            return false;
-        }
     }
 }
