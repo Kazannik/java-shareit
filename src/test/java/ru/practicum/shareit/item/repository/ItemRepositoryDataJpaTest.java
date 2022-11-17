@@ -25,7 +25,7 @@ class ItemRepositoryDataJpaTest {
 
     @BeforeAll
     void beforeAll() {
-        User user = userRepository.save(new User("name", "email@email.com"));
+        User user = userRepository.save(new User(1L,"name", "email@email.com"));
         itemRepository.save(new Item("name", "description", true, user));
     }
 
