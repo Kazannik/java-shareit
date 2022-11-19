@@ -26,4 +26,6 @@ public interface UserService {
     List<User> findAll();
 
     List<UserDto> findAllToDto();
+
+    boolean userValidated(Long id);
 }

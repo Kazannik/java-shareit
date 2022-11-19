@@ -32,4 +32,12 @@ public class BookingDto {
     ItemDto item;
     UserDto booker;
     BookingStatusEnum status;
+
+    public BookingDto(Long id, LocalDateTime start, LocalDateTime end, Long itemId, Long bookerId) {
+        this.id = id;
+        this.start = start;
+        this.end = end;
+        this.itemId = itemId;
+        this.bookerId = bookerId;
+    }
 }

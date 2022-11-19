@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -10,12 +11,19 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommentDto {
-    private Long id;
+    Long id;
     @NonNull
     @NotBlank
-    private String text;
-    private String authorName;
-    private LocalDateTime created;
+    String text;
+    String authorName;
+    LocalDateTime created;
+
+    public CommentDto(Long id, @NonNull String text, String authorName) {
+        this.id = id;
+        this.text = text;
+        this.authorName = authorName;
+    }
 }
