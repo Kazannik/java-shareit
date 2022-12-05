@@ -11,8 +11,6 @@ import ru.practicum.shareit.item.dto.ItemRequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 @Slf4j
 @RestController
@@ -48,8 +46,8 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<Object> findAll(@NotNull @RequestHeader(HEADER_USER_ID) long userId,
-                                          @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                          @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                          @RequestParam(name = "from", required = false) Integer from,
+                                          @RequestParam(name = "size", required = false) Integer size) {
         log.info("Get all items, userId={}, from={}, size={}", userId, from, size);
         return itemClient.getAllItems(userId, from, size);
     }
@@ -57,8 +55,8 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object> search(@NotNull @RequestHeader(HEADER_USER_ID) long userId,
                                          @NotNull @RequestParam(name = "text") String text,
-                                         @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                         @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                         @RequestParam(name = "from", required = false) Integer from,
+                                         @RequestParam(name = "size", required = false) Integer size) {
         log.info("Search items, userId={}, from={}, size={}", userId, from, size);
         return itemClient.searchItem(userId, text, from, size);
     }
